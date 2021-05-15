@@ -18,9 +18,13 @@ class HUDCall():
         self.geotype = geotype
         self.geo_value = geo_value
         self.request = self.call_api(hud_apikey)
-        self.json = json.loads(self.request.text)
-        self.pandas = self._toPandas()
-
+        print(self.request.status_code)
+        if self.request.status_code ==200:
+            self.json = json.loads(self.request.text)
+            self.pandas = self._toPandas()
+        else:
+            RuntimeError(f'Request invalid. Status code {self.request.status_code} received.')
+            
     def help(self):
         '''Tag to keep crosswalks straight'''
         print(f'General info: Queries HUD API with available key registered from {request_url}')
@@ -48,7 +52,6 @@ class HUDCall():
         return r
 
     def _toPandas(self):
-        j = self.json['data']
         j = self.json['data']
         _tuple = (
             (   j['year'], j['quarter'], j['input'], j['crosswalk_type'], self.geotype,
